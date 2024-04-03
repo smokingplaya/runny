@@ -1,0 +1,15 @@
+# hello there!
+
+runner-default: current
+
+presets:
+  macro:
+    runner: powershell
+    command: clear
+
+  default:
+    command: ls
+    run:
+      before:
+        - macro
+      after: clear
