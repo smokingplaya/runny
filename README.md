@@ -50,8 +50,8 @@ Runny starts default preset.
 
 ```yaml
 presets:
-	default:
-		command: ls
+  default:
+    command: ls
 ```
 
 # 🐣 Contributing
