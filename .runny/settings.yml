@@ -1,6 +1,6 @@
 # hello there!
 
-runner-default: current
+runner-default: bash
 
 presets:
   macro:
@@ -8,9 +8,7 @@ presets:
     command: clear
 
   default:
-    command:
-      - clear
-      - ls
+    command: pwd
     run:
       before:
         - clear

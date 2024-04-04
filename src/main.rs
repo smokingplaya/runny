@@ -24,12 +24,10 @@ fn handle(mut file: File) {
 }
 
 fn main() {
-    // currently useless code
-    
     let argv: Vec<String> = env::args().collect();
-    let argc: i32 = argv.len() as i32;
+    let argc = argv.len() as i32;
 
-    let preset: String = String::from(if argc == 1 { "default" } else { argv.get(2).unwrap() }); // yep
+    let preset = String::from(if argc == 1 { "default" } else { argv.get(1).unwrap() }); // yep
 
     globals::set("preset", preset);
 

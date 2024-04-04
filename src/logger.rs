@@ -20,7 +20,7 @@ impl LoggerLevel {
 }
 
 fn print(level: LoggerLevel, message: &str) {
-    println!("[runny][{}] {}", level.as_string(), message);
+    println!("[runny] [{}] {}", level.as_string(), message);
 }
 
 #[allow(dead_code)]
