@@ -56,4 +56,4 @@ presets:
 
 # 🐣 Contributing
 
-[defini7](https://github.com/defini7)
+soon
