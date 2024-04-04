@@ -8,8 +8,10 @@ presets:
     command: clear
 
   default:
-    command: ls
+    command:
+      - clear
+      - ls
     run:
       before:
-        - macro
-      after: clear
+        - clear
+      after: macro

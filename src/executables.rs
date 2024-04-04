@@ -1,5 +1,5 @@
 use yaml_rust::Yaml;
-use crate::{logger, runner};
+use crate::{globals, logger};
 
 fn bad_yml(yml: &Yaml, key: &str) -> bool {
     let val = &yml[key];
@@ -12,25 +12,40 @@ fn err(err: &str) {
 }
 
 #[allow(dead_code)]
-pub fn preset(_yml: &Yaml) {
-    
+fn preset(_yml: &Yaml) {
 }
 
 pub fn script(yml: &Yaml) {
     let runner: String = if bad_yml(yml, "runner-default") {String::from("current")} else {String::from(yml["runner-default"].as_str().unwrap())};
 
-    runner::set(runner);
+    globals::set("runner", runner);
 
     if bad_yml(yml, "presets") {
         return err("field \"presets\" is empty!");
     }
 
-    let presets = yml["presets"].as_hash();
+    let presets = &yml["presets"];
+    let presets_hash = presets.as_hash();
 
-    match presets {
+    let current_preset = globals::get("preset");
+
+    match presets_hash {
         Some(data) => {
-            println!("{:?}", data);
+            for (k, _) in data {
+                let name = k.as_str().unwrap();
+
+                if bad_yml(&presets, name) {
+                    err(&format!("field presets.{} is broken!", name));
+                    break;
+                }
+
+                if current_preset != name {
+                    continue;
+                }
+
+                preset(&presets[name]);
+            }
         },
-        None => err("field \"presets\" is empty!"),
+        None => err("field \"presets\" is broken!"),
     }
 }

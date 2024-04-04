@@ -8,12 +8,12 @@
 mod logger;
 mod finder;
 mod executables;
-mod runner;
+mod globals;
 
-use std::{fs::File, io::Read};
+use std::{env, fs::File, io::Read};
 use yaml_rust::YamlLoader;
 
-fn runny(mut file: File) {
+fn handle(mut file: File) {
     let mut content: String = String::new();
     let _ = file.read_to_string(&mut content);
 
@@ -26,11 +26,15 @@ fn runny(mut file: File) {
 fn main() {
     // currently useless code
     
-    //let argv: Vec<String> = env::args().collect();
-    //let _argc: i32 = argv.len() as i32;
+    let argv: Vec<String> = env::args().collect();
+    let argc: i32 = argv.len() as i32;
+
+    let preset: String = String::from(if argc == 1 { "default" } else { argv.get(2).unwrap() }); // yep
+
+    globals::set("preset", preset);
 
     match finder::settings() {
-        Ok(file) => runny(file),
+        Ok(file) => handle(file),
         Err(_) => return
     };
 }
