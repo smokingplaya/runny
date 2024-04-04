@@ -1,15 +1,27 @@
-# hello there!
+# runny build
 
-runner-default: bash
+#runner-default: bash
+
+#presets:
+#  build:
+#    command: cargo r
+#    run:
+#      after: echo "builded!"
+#
+#  default:
+#    command: clear
+#    run:
+#      after: build
+
+runner-default: powershell
 
 presets:
-  macro:
-    runner: powershell
-    command: clear
+  after:
+    command: echo "after"
 
   default:
-    command: pwd
+    command: echo "default command"
     run:
       before:
-        - clear
-      after: macro
+        - echo "before"
+      after: after

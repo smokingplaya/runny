@@ -3,11 +3,43 @@ use std::process::{Command, Stdio};
 use yaml_rust::Yaml;
 use crate::{globals, logger};
 
-fn bad_yml(yml: &Yaml, key: &str) -> bool {
-    let val = &yml[key];
+/*
+    other yaml functions
+*/
 
-    val.is_null() || val.is_badvalue()
+fn is_bad(yml: &Yaml) -> bool {
+    yml.is_null() || yml.is_badvalue()
 }
+
+fn is_bad_yml(yml: &Yaml, key: &str) -> bool {
+    is_bad(&yml[key])
+}
+
+fn is_yml_list(yml: &Yaml) -> bool {
+    match yml.as_vec() {
+        Some(_) => true,
+        None => false
+    }
+}
+
+fn yml_run(yml: &Yaml, key: &str) {
+    let field = &yml[key];
+    let field_is_list = is_yml_list(&field);
+
+    let runner = globals::get("runner");
+
+    if field_is_list {
+        for item in field.as_vec().unwrap() {
+            command(runner.clone(), item.as_str().unwrap());
+        }
+    } else {
+        preset(&globals::get_yaml()[field.as_str().unwrap()]);
+    }
+}
+
+/*
+    other
+*/
 
 fn err(err: &str) {
     logger::error(&format!("failed to parse settings.yml. Error: {}", err));
@@ -24,7 +56,7 @@ fn get_argument(shell: &str) -> &str {
     }
 }
 
-fn command(runner: String, command: String) {
+fn command(runner: String, command: &str) {
     let arg = get_argument(&runner);
 
     if arg.is_empty() {
@@ -34,7 +66,7 @@ fn command(runner: String, command: String) {
     let res = Command::new(runner.clone())
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
-        .args([arg, &command])
+        .args([arg, command])
         .output();
 
     match res {
@@ -44,27 +76,45 @@ fn command(runner: String, command: String) {
 }
 
 fn preset(yml: &Yaml) {
-    let runner = if bad_yml(yml, "runner") {globals::get("runner")} else {String::from(yml["runner"].as_str().unwrap())};
+    let runner = if is_bad_yml(yml, "runner") {globals::get("runner")} else {String::from(yml["runner"].as_str().unwrap())};
 
-    if bad_yml(yml, "command") {
+    if is_bad_yml(yml, "command") {
         return logger::error("failed to find \"command\" field!");
     }
 
-    let command_is_list: bool =  match &yml["command"].as_vec() {
-        Some(_) => true,
-        None => false
-    };
+    let cmd = &yml["command"];
+    let command_is_list = is_yml_list(cmd);
 
-    if command_is_list {
-        return logger::info("it's list!");
+    let run_field = &yml["run"];
+    let has_run_field = !is_bad(run_field);
+    let has_run_before_field = if has_run_field {!is_bad_yml(run_field, "before")} else {false};
+    let has_run_after_field = if has_run_field {!is_bad_yml(run_field, "after")} else {false};
+
+    // run before
+
+    if has_run_field && has_run_before_field {
+        yml_run(run_field, "before");
     }
 
-    command(runner, (&yml["command"].as_str().unwrap()).to_string());
+    // run command
+
+    if command_is_list {
+        for item in cmd.as_vec().unwrap() {
+            command(runner.clone(), item.as_str().unwrap());
+        }
+    } else {
+        command(runner, cmd.as_str().unwrap());
+    }
+
+    // run after
+
+    if has_run_field && has_run_after_field {
+        yml_run(run_field, "after");
+    }
 }
 
-// парсит settings.yml и вызывает presets
 pub fn script(yml: &Yaml) {
-    if bad_yml(yml, "runner-default") {
+    if is_bad_yml(yml, "runner-default") {
         return logger::error("you don't specify \nrunner-default\n parameter!");
     }
 
@@ -72,13 +122,15 @@ pub fn script(yml: &Yaml) {
 
     globals::set("runner", runner);
 
-    if bad_yml(yml, "presets") {
+    if is_bad_yml(yml, "presets") {
         return err("field \"presets\" is empty!");
     }
 
     let presets = &yml["presets"];
     let presets_hash = presets.as_hash();
 
+    globals::set_yaml(presets.clone());
+    
     let current_preset = globals::get("preset");
 
     match presets_hash {
@@ -86,7 +138,7 @@ pub fn script(yml: &Yaml) {
             for (k, _) in data {
                 let name = k.as_str().unwrap();
 
-                if bad_yml(&presets, name) {
+                if is_bad_yml(&presets, name) {
                     err(&format!("field presets.{} is broken!", name));
                     break;
                 }
@@ -95,7 +147,9 @@ pub fn script(yml: &Yaml) {
                     continue;
                 }
 
-                preset(&presets[name]);
+                let current_preset = &presets[name];
+
+                preset(current_preset);
             }
         },
         None => err("field \"presets\" is broken!"),
