@@ -4,6 +4,11 @@
 
 <h4 align="center">scripting tool, for simpler projects development</h4>
 
+<p align="center">
+<img src="https://img.shields.io/badge/Powered By Rust-e43717?style=for-the-badge&logo=rust&logoColor=white">
+
+</p>
+
 # 🤔 How it works
 
 Runny is command-line tool, that run start/build/etc commands
