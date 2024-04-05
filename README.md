@@ -5,8 +5,7 @@
 <h4 align="center">scripting tool, for simpler projects development</h4>
 
 <p align="center">
-<img src="https://img.shields.io/badge/Powered By Rust-e43717?style=for-the-badge&logo=rust&logoColor=white">
-
+<img src="https://img.shields.io/badge/Powered By Rust-e43717?style=for-the-badge&logo=rust&logoColor=white"><br><img src="https://github.com/smokingplaya/runny/actions/workflows/release.yml/badge.svg">
 </p>
 
 # 🤔 How it works
