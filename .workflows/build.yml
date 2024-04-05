@@ -1,0 +1,44 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Rust
+      uses: actions/setup-rust@v1
+      with:
+        rust-version: stable
+
+    - name: Build project
+      run: cargo build --release
+
+    - name: Rename executable and create artifact
+      run: |
+        if [ ${{ matrix.os }} == 'windows-latest' ]; then
+          mv target/release/proj.exe target/release/proj_windows.exe
+        elif [ ${{ matrix.os }} == 'ubuntu-latest' ]; then
+          mv target/release/proj target/release/proj_linux
+        elif [ ${{ matrix.os }} == 'macos-latest' ]; then
+          mv target/release/proj target/release/proj_macos
+        fi
+        mkdir -p ${{ matrix.os }}_artifacts
+        cp target/release/* ${{ matrix.os }}_artifacts
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.os }}-artifacts
+        path: ${{ matrix.os }}_artifacts
