@@ -1,27 +1,9 @@
-# runny build
-
-#runner-default: bash
-
-#presets:
-#  build:
-#    command: cargo r
-#    run:
-#      after: echo "builded!"
-#
-#  default:
-#    command: clear
-#    run:
-#      after: build
-
-runner-default: powershell
+runner-default: powershell # shell, in which commands will be executed
 
 presets:
-  after:
-    command: echo "after"
-
   default:
-    command: echo "default command"
+    command: cargo run
     run:
-      before:
-        - echo "before"
-      after: after
+      after: # commands, that will be executed after the project is built
+        - mv /target/debug/project_name.exe ~/compiled # moves the compiled executable to HOME/compiled folder
+        - echo "moved!"

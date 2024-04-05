@@ -1,9 +1,18 @@
-Runny is a scripting tool, for simpler projects development.
+<p align="center">
+  <img src="images/runny.png">
+</p>
+
+<h4 align="center">scripting tool, for simpler projects development</h4>
 
 # 🤔 How it works
 
 Runny is command-line tool, that run start/build/etc commands
 for your projects in workspaces.
+
+Runny executes pre-recorded commands (presets) in your console/terminal.
+For example Runny can be used to build your project.
+
+[Example of a preset for building a Rust project.](./.runny/settings.yml)
 
 ```bash
 runny # starts runny with "default" preset
