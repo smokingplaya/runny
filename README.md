@@ -44,7 +44,7 @@ folder with name **.runny**, then you need to create **settings.yml** file.
 
 ### 👩‍🦼 First steps
 
-Specify [shell](#list-of-availiable-shells) in which your commands will be executed:
+Specify [shell](#🛸-list-of-availiable-shells) in which your commands will be executed:
 
 ```yaml
 runner-default: bash
@@ -52,15 +52,13 @@ runner-default: bash
 
 ### Configure your presets
 
-Preset is a HUINYAAA thats executed, ebat'
-
-By default, if you running **runny** command in your shell, without argumenst,
-Runny starts default preset.
+By default, if you running **runny** command in your shell without arguments,
+Runny will be start default preset.
 
 ```yaml
 presets:
   default:
-    command: ls
+    command: ls # runs "ls" command in bash-shell
 ```
 
 # 🐣 Contributing
